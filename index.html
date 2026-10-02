@@ -11,22 +11,27 @@
 <body>
   <main class="app">
 
-    <!-- 初回ユーザー作成 -->
+    <!-- ==============================
+         初回ユーザー作成
+    ============================== -->
     <section id="welcomeScreen" class="screen hidden">
       <div class="welcome">
         <p class="eyebrow">MY STUDY LOG</p>
         <h1>自学ログ</h1>
+
         <p class="lead">
           自分の学びを、ひとつずつ残していく。
         </p>
 
         <div class="card">
           <h2>はじめまして</h2>
+
           <p class="description">
             まずは、この自学ログを使う人の名前を登録してください。
           </p>
 
           <label for="firstUserName">名前</label>
+
           <input
             type="text"
             id="firstUserName"
@@ -35,7 +40,10 @@
             autocomplete="off"
           >
 
-          <button id="createFirstUserButton" class="button primary">
+          <button
+            id="createFirstUserButton"
+            class="button primary"
+          >
             はじめる
           </button>
         </div>
@@ -43,8 +51,11 @@
     </section>
 
 
-    <!-- ユーザー選択 -->
+    <!-- ==============================
+         ユーザー選択
+    ============================== -->
     <section id="userSelectScreen" class="screen hidden">
+
       <header class="page-header">
         <div>
           <p class="eyebrow">MY STUDY LOG</p>
@@ -54,77 +65,119 @@
 
       <div class="content">
         <h2>だれの自学ログ？</h2>
+
         <p class="description">
           使う人を選んでください。
         </p>
 
         <div id="userList" class="user-list"></div>
 
-        <button id="addUserButton" class="button secondary">
+        <button
+          id="addUserButton"
+          class="button secondary"
+        >
           ＋ 新しいユーザーを追加
         </button>
       </div>
+
     </section>
 
 
-    <!-- ホーム -->
+    <!-- ==============================
+         ホーム
+    ============================== -->
     <section id="homeScreen" class="screen hidden">
+
       <header class="page-header home-header">
+
         <div>
           <p class="eyebrow">MY STUDY LOG</p>
           <h1>自学ログ</h1>
         </div>
 
-        <button id="switchUserButton" class="text-button">
+        <button
+          id="switchUserButton"
+          class="text-button"
+        >
           ユーザー切替
         </button>
+
       </header>
 
       <div class="content">
+
         <p class="welcome-name">
           <span id="currentUserName"></span>さんの自学ログ
         </p>
 
         <div class="home-card">
+
           <div>
-            <span class="home-card-label">今日の学び</span>
+            <span class="home-card-label">
+              記録した学び
+            </span>
+
             <strong id="logCount">0</strong>
-            <span class="home-card-unit">件</span>
+
+            <span class="home-card-unit">
+              件
+            </span>
           </div>
+
         </div>
 
+
         <div class="home-actions">
-          <button class="button primary" id="newLogButton">
+
+          <button
+            class="button primary"
+            id="newLogButton"
+          >
             ＋ 今日の学びを記録
           </button>
 
-          <button class="button secondary" id="viewLogsButton">
+          <button
+            class="button secondary"
+            id="viewLogsButton"
+          >
             記録を見る
           </button>
+
         </div>
 
-        <p class="coming-soon">
-          自学ログの記録機能は次のステップで追加します。
-        </p>
       </div>
+
     </section>
 
 
-    <!-- ユーザー追加 -->
+    <!-- ==============================
+         ユーザー追加
+    ============================== -->
     <section id="addUserScreen" class="screen hidden">
+
       <header class="page-header">
-        <button id="backToUserSelectButton" class="text-button">
+
+        <button
+          id="backToUserSelectButton"
+          class="text-button"
+        >
           ← 戻る
         </button>
 
         <h1>ユーザー追加</h1>
+
       </header>
 
       <div class="content">
+
         <div class="card">
+
           <h2>新しいユーザー</h2>
 
-          <label for="newUserName">名前</label>
+          <label for="newUserName">
+            名前
+          </label>
+
           <input
             type="text"
             id="newUserName"
@@ -133,11 +186,264 @@
             autocomplete="off"
           >
 
-          <button id="createUserButton" class="button primary">
+          <button
+            id="createUserButton"
+            class="button primary"
+          >
             追加する
           </button>
+
         </div>
+
       </div>
+
+    </section>
+
+
+    <!-- ==============================
+         自学ログ入力
+    ============================== -->
+    <section id="logFormScreen" class="screen hidden">
+
+      <header class="page-header">
+
+        <button
+          id="backToHomeButton"
+          class="text-button"
+        >
+          ← ホーム
+        </button>
+
+        <h1>今日の学び</h1>
+
+      </header>
+
+
+      <div class="content">
+
+        <p class="form-intro">
+          今日、自分が気になったことや
+          調べたことを残しておきましょう。
+        </p>
+
+
+        <!-- 今日の入口 -->
+        <div class="form-field">
+
+          <label for="logEntry">
+            今日の入口
+          </label>
+
+          <p class="field-help">
+            何がきっかけで、これを調べようと思った？
+          </p>
+
+          <textarea
+            id="logEntry"
+            rows="4"
+            placeholder="例：神話を読んでいて、なぜ神様がこんなところから生まれるのか気になった"
+          ></textarea>
+
+        </div>
+
+
+        <!-- わかったこと -->
+        <div class="form-field">
+
+          <label for="logKnown">
+            調べてわかったこと
+          </label>
+
+          <p class="field-help">
+            今日調べて、自分がわかったこと。
+          </p>
+
+          <textarea
+            id="logKnown"
+            rows="6"
+            placeholder="調べたこと、知ったことを書いてみよう"
+          ></textarea>
+
+        </div>
+
+
+        <!-- 引っかかり -->
+        <div class="form-field">
+
+          <label for="logQuestion">
+            自分の引っかかり
+          </label>
+
+          <p class="field-help">
+            「あれ？」「なんで？」と思ったこと。
+          </p>
+
+          <textarea
+            id="logQuestion"
+            rows="5"
+            placeholder="まだよくわからないことや、気になったこと"
+          ></textarea>
+
+        </div>
+
+
+        <!-- 自分の理解・考え -->
+        <div class="form-field">
+
+          <label for="logThought">
+            今の自分の理解・考え
+          </label>
+
+          <p class="field-help">
+            今の時点で、自分はどう考えている？
+          </p>
+
+          <textarea
+            id="logThought"
+            rows="6"
+            placeholder="今の自分なりの理解や考え"
+          ></textarea>
+
+        </div>
+
+
+        <!-- 次に調べたいこと -->
+        <div class="form-field">
+
+          <label for="logNext">
+            次に調べたいこと
+          </label>
+
+          <p class="field-help">
+            もっと知りたいこと、次に調べてみたいこと。
+          </p>
+
+          <textarea
+            id="logNext"
+            rows="4"
+            placeholder="次に調べてみたいこと"
+          ></textarea>
+
+        </div>
+
+
+        <!-- 今日の一言 -->
+        <div class="form-field">
+
+          <label for="logMemo">
+            今日の一言
+            <span class="optional">任意</span>
+          </label>
+
+          <p class="field-help">
+            今日の学びを一言で残すなら？
+          </p>
+
+          <textarea
+            id="logMemo"
+            rows="3"
+            placeholder="今日の一言"
+          ></textarea>
+
+        </div>
+
+
+        <!-- 分野 -->
+        <div class="form-field">
+
+          <label for="logCategory">
+            分野
+          </label>
+
+          <p class="field-help">
+            どんな分野の学び？
+          </p>
+
+          <input
+            type="text"
+            id="logCategory"
+            placeholder="例：民俗学"
+            maxlength="50"
+          >
+
+        </div>
+
+
+        <!-- キーワード -->
+        <div class="form-field">
+
+          <label for="logTags">
+            キーワード
+          </label>
+
+          <p class="field-help">
+            後から検索するときに使えそうな言葉。
+          </p>
+
+          <input
+            type="text"
+            id="logTags"
+            placeholder="例：神話、禁忌、イザナギ"
+            maxlength="200"
+          >
+
+        </div>
+
+
+        <div class="form-actions">
+
+          <button
+            id="saveLogButton"
+            class="button primary"
+          >
+            保存する
+          </button>
+
+          <button
+            id="cancelLogButton"
+            class="button secondary"
+          >
+            キャンセル
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ==============================
+         記録一覧
+         ※ STEP 3で本実装
+    ============================== -->
+    <section id="logsScreen" class="screen hidden">
+
+      <header class="page-header">
+
+        <button
+          id="backFromLogsButton"
+          class="text-button"
+        >
+          ← ホーム
+        </button>
+
+        <h1>記録を見る</h1>
+
+      </header>
+
+      <div class="content">
+
+        <p class="description">
+          記録一覧は次のステップで作ります。
+        </p>
+
+        <div class="empty-state">
+          <p>現在は、保存された記録の件数を確認できます。</p>
+        </div>
+
+      </div>
+
     </section>
 
   </main>
