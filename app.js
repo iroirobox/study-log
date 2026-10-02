@@ -1,6 +1,6 @@
 // ========================================
 // 自学ログ
-// STEP 1：ユーザー管理 + IndexedDB
+// STEP 2：自学ログ入力 + 保存
 // ========================================
 
 const DB_NAME = "StudyLogDB";
@@ -153,6 +153,11 @@ function showScreen(screenId) {
   if (target) {
     target.classList.remove("hidden");
   }
+
+  window.scrollTo({
+    top: 0,
+    behavior: "instant"
+  });
 }
 
 
@@ -167,22 +172,22 @@ async function initializeApp() {
     const users = await getAllUsers();
 
     if (users.length === 0) {
-      // 初回
       showScreen("welcomeScreen");
       return;
     }
 
     if (users.length === 1) {
-      // 1人だけなら選択画面を飛ばす
       await openHome(users[0]);
       return;
     }
 
-    // 2人以上ならユーザー選択
     await showUserSelection();
 
   } catch (error) {
-    console.error("アプリの初期化に失敗しました:", error);
+    console.error(
+      "アプリの初期化に失敗しました:",
+      error
+    );
 
     alert(
       "データの読み込みに失敗しました。\n" +
@@ -200,6 +205,7 @@ async function showUserSelection() {
   const users = await getAllUsers();
 
   const userList = document.getElementById("userList");
+
   userList.innerHTML = "";
 
   users.forEach((user) => {
@@ -233,7 +239,8 @@ async function showUserSelection() {
 async function openHome(user) {
   currentUser = user;
 
-  const nameElement = document.getElementById("currentUserName");
+  const nameElement =
+    document.getElementById("currentUserName");
 
   nameElement.textContent = user.name;
 
@@ -244,19 +251,47 @@ async function openHome(user) {
 
 
 // ========================================
-// ログ件数
+// ログ操作
 // ========================================
 
 function getUserLogs(userId) {
   return new Promise((resolve, reject) => {
-    const transaction = db.transaction(LOG_STORE, "readonly");
-    const store = transaction.objectStore(LOG_STORE);
-    const index = store.index("userId");
+    const transaction =
+      db.transaction(LOG_STORE, "readonly");
 
-    const request = index.getAll(userId);
+    const store =
+      transaction.objectStore(LOG_STORE);
+
+    const index =
+      store.index("userId");
+
+    const request =
+      index.getAll(userId);
 
     request.onsuccess = () => {
       resolve(request.result);
+    };
+
+    request.onerror = () => {
+      reject(request.error);
+    };
+  });
+}
+
+
+function saveStudyLog(log) {
+  return new Promise((resolve, reject) => {
+    const transaction =
+      db.transaction(LOG_STORE, "readwrite");
+
+    const store =
+      transaction.objectStore(LOG_STORE);
+
+    const request =
+      store.add(log);
+
+    request.onsuccess = () => {
+      resolve(log);
     };
 
     request.onerror = () => {
@@ -272,11 +307,153 @@ async function updateLogCount() {
   }
 
   try {
-    const logs = await getUserLogs(currentUser.id);
+    const logs =
+      await getUserLogs(currentUser.id);
 
-    document.getElementById("logCount").textContent = logs.length;
+    document.getElementById("logCount").textContent =
+      logs.length;
+
   } catch (error) {
-    console.error("ログ件数の取得に失敗しました:", error);
+    console.error(
+      "ログ件数の取得に失敗しました:",
+      error
+    );
+  }
+}
+
+
+// ========================================
+// 入力内容取得
+// ========================================
+
+function getLogFormData() {
+  return {
+    entry:
+      document.getElementById("logEntry").value.trim(),
+
+    known:
+      document.getElementById("logKnown").value.trim(),
+
+    question:
+      document.getElementById("logQuestion").value.trim(),
+
+    thought:
+      document.getElementById("logThought").value.trim(),
+
+    next:
+      document.getElementById("logNext").value.trim(),
+
+    memo:
+      document.getElementById("logMemo").value.trim(),
+
+    category:
+      document.getElementById("logCategory").value.trim(),
+
+    tags:
+      document.getElementById("logTags").value.trim()
+  };
+}
+
+
+// ========================================
+// 入力内容クリア
+// ========================================
+
+function clearLogForm() {
+  document.getElementById("logEntry").value = "";
+  document.getElementById("logKnown").value = "";
+  document.getElementById("logQuestion").value = "";
+  document.getElementById("logThought").value = "";
+  document.getElementById("logNext").value = "";
+  document.getElementById("logMemo").value = "";
+  document.getElementById("logCategory").value = "";
+  document.getElementById("logTags").value = "";
+}
+
+
+// ========================================
+// ログ入力画面
+// ========================================
+
+function openLogForm() {
+  if (!currentUser) {
+    return;
+  }
+
+  clearLogForm();
+
+  showScreen("logFormScreen");
+
+  document.getElementById("logEntry").focus();
+}
+
+
+// ========================================
+// ログ保存
+// ========================================
+
+async function handleSaveLog() {
+  if (!currentUser) {
+    alert("ユーザーが選択されていません。");
+    return;
+  }
+
+  const data = getLogFormData();
+
+  // 「今日の入口」は今回の記録の入口なので必須
+  if (!data.entry) {
+    alert("「今日の入口」を入力してください。");
+
+    document.getElementById("logEntry").focus();
+
+    return;
+  }
+
+  const log = {
+    id: createId(),
+
+    userId: currentUser.id,
+
+    createdAt: Date.now(),
+
+    entry: data.entry,
+
+    known: data.known,
+
+    question: data.question,
+
+    thought: data.thought,
+
+    next: data.next,
+
+    memo: data.memo,
+
+    category: data.category,
+
+    tags: data.tags
+  };
+
+  try {
+    await saveStudyLog(log);
+
+    await updateLogCount();
+
+    clearLogForm();
+
+    alert("自学ログを保存しました。");
+
+    showScreen("homeScreen");
+
+  } catch (error) {
+    console.error(
+      "自学ログの保存に失敗しました:",
+      error
+    );
+
+    alert(
+      "自学ログの保存に失敗しました。\n" +
+      "もう一度お試しください。"
+    );
   }
 }
 
@@ -287,32 +464,41 @@ async function updateLogCount() {
 
 function setupEvents() {
 
-  // ------------------------------
+  // ----------------------------------------
   // 初回ユーザー作成
-  // ------------------------------
+  // ----------------------------------------
 
   document
     .getElementById("createFirstUserButton")
     .addEventListener("click", async () => {
 
-      const input = document.getElementById("firstUserName");
-      const name = input.value.trim();
+      const input =
+        document.getElementById("firstUserName");
+
+      const name =
+        input.value.trim();
 
       if (!name) {
         alert("名前を入力してください。");
+
         input.focus();
+
         return;
       }
 
       try {
-        const user = await createUser(name);
+        const user =
+          await createUser(name);
 
         input.value = "";
 
         await openHome(user);
 
       } catch (error) {
-        console.error("ユーザー作成に失敗しました:", error);
+        console.error(
+          "ユーザー作成に失敗しました:",
+          error
+        );
 
         alert(
           "ユーザーの作成に失敗しました。\n" +
@@ -322,14 +508,16 @@ function setupEvents() {
     });
 
 
-  // ------------------------------
+  // ----------------------------------------
   // ユーザー追加
-  // ------------------------------
+  // ----------------------------------------
 
   document
     .getElementById("addUserButton")
     .addEventListener("click", () => {
+
       document.getElementById("newUserName").value = "";
+
       showScreen("addUserScreen");
     });
 
@@ -338,12 +526,17 @@ function setupEvents() {
     .getElementById("createUserButton")
     .addEventListener("click", async () => {
 
-      const input = document.getElementById("newUserName");
-      const name = input.value.trim();
+      const input =
+        document.getElementById("newUserName");
+
+      const name =
+        input.value.trim();
 
       if (!name) {
         alert("名前を入力してください。");
+
         input.focus();
+
         return;
       }
 
@@ -355,7 +548,10 @@ function setupEvents() {
         await showUserSelection();
 
       } catch (error) {
-        console.error("ユーザー追加に失敗しました:", error);
+        console.error(
+          "ユーザー追加に失敗しました:",
+          error
+        );
 
         alert(
           "ユーザーの追加に失敗しました。\n" +
@@ -365,28 +561,34 @@ function setupEvents() {
     });
 
 
-  // ------------------------------
+  // ----------------------------------------
   // ユーザー選択へ戻る
-  // ------------------------------
+  // ----------------------------------------
 
   document
     .getElementById("backToUserSelectButton")
     .addEventListener("click", async () => {
+
       await showUserSelection();
     });
 
 
-  // ------------------------------
+  // ----------------------------------------
   // ユーザー切替
-  // ------------------------------
+  // ----------------------------------------
 
   document
     .getElementById("switchUserButton")
     .addEventListener("click", async () => {
-      const users = await getAllUsers();
+
+      const users =
+        await getAllUsers();
 
       if (users.length <= 1) {
-        alert("現在、登録されているユーザーは1人です。");
+        alert(
+          "現在、登録されているユーザーは1人です。"
+        );
+
         return;
       }
 
@@ -394,32 +596,96 @@ function setupEvents() {
     });
 
 
-  // ------------------------------
-  // 今回は未実装
-  // ------------------------------
+  // ----------------------------------------
+  // 自学ログ入力画面
+  // ----------------------------------------
 
   document
     .getElementById("newLogButton")
     .addEventListener("click", () => {
-      alert("自学ログの記録機能は、次のステップで追加します。");
+
+      openLogForm();
     });
 
+
+  // ----------------------------------------
+  // 自学ログ保存
+  // ----------------------------------------
+
+  document
+    .getElementById("saveLogButton")
+    .addEventListener("click", async () => {
+
+      await handleSaveLog();
+    });
+
+
+  // ----------------------------------------
+  // ログ入力画面からホームへ
+  // ----------------------------------------
+
+  document
+    .getElementById("backToHomeButton")
+    .addEventListener("click", () => {
+
+      showScreen("homeScreen");
+    });
+
+
+  document
+    .getElementById("cancelLogButton")
+    .addEventListener("click", () => {
+
+      const shouldCancel =
+        confirm(
+          "入力中の内容は保存されません。\n" +
+          "ホームに戻りますか？"
+        );
+
+      if (!shouldCancel) {
+        return;
+      }
+
+      clearLogForm();
+
+      showScreen("homeScreen");
+    });
+
+
+  // ----------------------------------------
+  // 記録を見る
+  // ----------------------------------------
 
   document
     .getElementById("viewLogsButton")
     .addEventListener("click", () => {
-      alert("記録一覧は、次のステップで追加します。");
+
+      showScreen("logsScreen");
     });
 
 
-  // ------------------------------
+  // ----------------------------------------
+  // 記録一覧からホームへ
+  // ----------------------------------------
+
+  document
+    .getElementById("backFromLogsButton")
+    .addEventListener("click", () => {
+
+      showScreen("homeScreen");
+    });
+
+
+  // ----------------------------------------
   // Enterキー
-  // ------------------------------
+  // ----------------------------------------
 
   document
     .getElementById("firstUserName")
     .addEventListener("keydown", (event) => {
+
       if (event.key === "Enter") {
+
         document
           .getElementById("createFirstUserButton")
           .click();
@@ -430,7 +696,9 @@ function setupEvents() {
   document
     .getElementById("newUserName")
     .addEventListener("keydown", (event) => {
+
       if (event.key === "Enter") {
+
         document
           .getElementById("createUserButton")
           .click();
@@ -443,7 +711,12 @@ function setupEvents() {
 // アプリ開始
 // ========================================
 
-document.addEventListener("DOMContentLoaded", async () => {
-  setupEvents();
-  await initializeApp();
-});
+document.addEventListener(
+  "DOMContentLoaded",
+  async () => {
+
+    setupEvents();
+
+    await initializeApp();
+  }
+);
