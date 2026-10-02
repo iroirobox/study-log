@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#526b51">
+  <title>自学ログ</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <main class="app">
+
+    <!-- 初回ユーザー作成 -->
+    <section id="welcomeScreen" class="screen hidden">
+      <div class="welcome">
+        <p class="eyebrow">MY STUDY LOG</p>
+        <h1>自学ログ</h1>
+        <p class="lead">
+          自分の学びを、ひとつずつ残していく。
+        </p>
+
+        <div class="card">
+          <h2>はじめまして</h2>
+          <p class="description">
+            まずは、この自学ログを使う人の名前を登録してください。
+          </p>
+
+          <label for="firstUserName">名前</label>
+          <input
+            type="text"
+            id="firstUserName"
+            placeholder="例：あき"
+            maxlength="30"
+            autocomplete="off"
+          >
+
+          <button id="createFirstUserButton" class="button primary">
+            はじめる
+          </button>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ユーザー選択 -->
+    <section id="userSelectScreen" class="screen hidden">
+      <header class="page-header">
+        <div>
+          <p class="eyebrow">MY STUDY LOG</p>
+          <h1>自学ログ</h1>
+        </div>
+      </header>
+
+      <div class="content">
+        <h2>だれの自学ログ？</h2>
+        <p class="description">
+          使う人を選んでください。
+        </p>
+
+        <div id="userList" class="user-list"></div>
+
+        <button id="addUserButton" class="button secondary">
+          ＋ 新しいユーザーを追加
+        </button>
+      </div>
+    </section>
+
+
+    <!-- ホーム -->
+    <section id="homeScreen" class="screen hidden">
+      <header class="page-header home-header">
+        <div>
+          <p class="eyebrow">MY STUDY LOG</p>
+          <h1>自学ログ</h1>
+        </div>
+
+        <button id="switchUserButton" class="text-button">
+          ユーザー切替
+        </button>
+      </header>
+
+      <div class="content">
+        <p class="welcome-name">
+          <span id="currentUserName"></span>さんの自学ログ
+        </p>
+
+        <div class="home-card">
+          <div>
+            <span class="home-card-label">今日の学び</span>
+            <strong id="logCount">0</strong>
+            <span class="home-card-unit">件</span>
+          </div>
+        </div>
+
+        <div class="home-actions">
+          <button class="button primary" id="newLogButton">
+            ＋ 今日の学びを記録
+          </button>
+
+          <button class="button secondary" id="viewLogsButton">
+            記録を見る
+          </button>
+        </div>
+
+        <p class="coming-soon">
+          自学ログの記録機能は次のステップで追加します。
+        </p>
+      </div>
+    </section>
+
+
+    <!-- ユーザー追加 -->
+    <section id="addUserScreen" class="screen hidden">
+      <header class="page-header">
+        <button id="backToUserSelectButton" class="text-button">
+          ← 戻る
+        </button>
+
+        <h1>ユーザー追加</h1>
+      </header>
+
+      <div class="content">
+        <div class="card">
+          <h2>新しいユーザー</h2>
+
+          <label for="newUserName">名前</label>
+          <input
+            type="text"
+            id="newUserName"
+            placeholder="例：ゆう"
+            maxlength="30"
+            autocomplete="off"
+          >
+
+          <button id="createUserButton" class="button primary">
+            追加する
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
