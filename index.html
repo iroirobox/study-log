@@ -1,90 +1,504 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#526b51">
-  <title>自学ログ</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#526b51">
+<title>自学ログ</title>
+<style>
+:root{
+  --bg:#f7f5ef;
+  --paper:#fffefa;
+  --paper-soft:#f2f0e8;
+  --green:#526b51;
+  --green-dark:#40533f;
+  --green-soft:#e6ece3;
+  --text:#30352f;
+  --muted:#7b8178;
+  --line:#deddd4;
+  --shadow:0 12px 35px rgba(55,62,51,.08);
+  --radius:20px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text)}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",YuGothic,Meiryo,sans-serif;
+  line-height:1.7;
+}
+button,input{font:inherit}
+button{cursor:pointer}
+.app{min-height:100vh}
+.topbar{
+  height:68px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 22px;
+  border-bottom:1px solid rgba(82,107,81,.10);
+  background:rgba(255,254,250,.88);
+  backdrop-filter:blur(10px);
+  position:sticky;
+  top:0;
+  z-index:20;
+}
+.brand{
+  display:flex;
+  align-items:baseline;
+  gap:9px;
+  color:var(--green-dark);
+}
+.brand-main{
+  font-family:Georgia,"Times New Roman","Yu Mincho",YuMincho,serif;
+  font-size:21px;
+  font-weight:600;
+  letter-spacing:.06em;
+}
+.brand-sub{font-size:11px;color:var(--muted);letter-spacing:.08em}
+.icon-btn{
+  width:42px;height:42px;border:0;border-radius:50%;
+  background:var(--paper-soft);color:var(--green-dark);
+  display:grid;place-items:center;font-size:19px;
+}
+.icon-btn:hover{background:var(--green-soft)}
+main{width:min(920px,calc(100% - 32px));margin:0 auto;padding:44px 0 70px}
+.hero{padding:16px 2px 30px}
+.eyebrow{
+  color:var(--green);font-size:12px;font-weight:700;
+  letter-spacing:.16em;margin-bottom:12px;
+}
+h1{
+  margin:0 0 13px;
+  font-family:Georgia,"Times New Roman","Yu Mincho",YuMincho,serif;
+  font-weight:500;font-size:clamp(32px,6vw,48px);
+  letter-spacing:.035em;line-height:1.25;
+}
+.lead{margin:0;color:var(--muted);font-size:14px;max-width:620px}
+.step-card{
+  background:var(--green);color:white;border-radius:24px;
+  padding:25px 27px;box-shadow:var(--shadow);margin-bottom:18px;
+}
+.step-label{font-size:11px;letter-spacing:.16em;opacity:.72;margin-bottom:7px}
+.step-title{font-size:20px;font-weight:700;margin-bottom:4px}
+.step-text{font-size:13px;opacity:.82}
+.section-card{
+  background:var(--paper);border:1px solid var(--line);
+  border-radius:var(--radius);box-shadow:var(--shadow);
+  padding:25px;margin-bottom:18px;
+}
+.section-title{
+  font-family:Georgia,"Times New Roman","Yu Mincho",YuMincho,serif;
+  font-size:20px;margin:0 0 5px;font-weight:600;
+}
+.section-desc{font-size:13px;color:var(--muted);margin:0 0 20px}
+.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.feature{
+  background:var(--paper-soft);border-radius:16px;padding:18px;
+}
+.feature-num{
+  width:29px;height:29px;border-radius:50%;background:var(--green-soft);
+  color:var(--green-dark);display:grid;place-items:center;
+  font-size:12px;font-weight:700;margin-bottom:12px;
+}
+.feature-title{font-size:14px;font-weight:700;margin-bottom:3px}
+.feature-text{font-size:12px;color:var(--muted);line-height:1.65}
+.primary{
+  width:100%;border:0;border-radius:15px;padding:14px 18px;
+  background:var(--green);color:white;font-weight:700;
+  box-shadow:0 7px 18px rgba(82,107,81,.18);
+}
+.primary:hover{background:var(--green-dark)}
+.secondary{
+  border:1px solid var(--line);background:var(--paper);
+  color:var(--green-dark);border-radius:13px;padding:10px 15px;
+}
+.secondary:hover{background:var(--paper-soft)}
+.user-row{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:15px;padding:14px 0;border-bottom:1px solid var(--line);
+}
+.user-row:last-child{border-bottom:0}
+.user-info{display:flex;align-items:center;gap:12px;min-width:0}
+.avatar{
+  width:40px;height:40px;border-radius:50%;display:grid;place-items:center;
+  background:var(--green-soft);color:var(--green-dark);font-weight:700;flex:none;
+}
+.user-name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-status{font-size:11px;color:var(--green);margin-top:1px}
+.empty{color:var(--muted);font-size:13px;padding:10px 0}
+.setup-wrap{max-width:520px;margin:8vh auto 0}
+.setup-card{
+  background:var(--paper);border:1px solid var(--line);border-radius:26px;
+  padding:30px;box-shadow:var(--shadow);
+}
+.setup-title{
+  font-family:Georgia,"Times New Roman","Yu Mincho",YuMincho,serif;
+  font-size:28px;margin:0 0 7px;
+}
+.setup-desc{font-size:13px;color:var(--muted);margin:0 0 22px}
+.field-label{display:block;font-size:12px;font-weight:700;margin-bottom:7px}
+.text-input{
+  width:100%;border:1px solid var(--line);background:white;border-radius:13px;
+  padding:12px 14px;outline:none;color:var(--text);
+}
+.text-input:focus{border-color:var(--green);box-shadow:0 0 0 3px var(--green-soft)}
+.error{font-size:12px;color:#a34e45;margin-top:8px;min-height:18px}
+.footer-note{text-align:center;color:var(--muted);font-size:11px;margin-top:28px}
+.hidden{display:none!important}
+.overlay{
+  position:fixed;inset:0;background:rgba(36,42,35,.28);
+  z-index:30;opacity:0;pointer-events:none;transition:.2s;
+}
+.overlay.open{opacity:1;pointer-events:auto}
+.user-panel{
+  position:fixed;top:0;right:0;height:100dvh;width:min(370px,88vw);
+  background:var(--paper);z-index:31;transform:translateX(100%);
+  transition:.25s;box-shadow:-12px 0 35px rgba(0,0,0,.10);
+  padding:23px;overflow:auto;
+}
+.user-panel.open{transform:translateX(0)}
+.panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.panel-title{
+  font-family:Georgia,"Times New Roman","Yu Mincho",YuMincho,serif;
+  font-size:21px;font-weight:600;
+}
+.add-user{margin-top:20px;padding-top:20px;border-top:1px solid var(--line)}
+.small-label{font-size:11px;color:var(--muted);display:block;margin-bottom:6px}
+.current-badge{
+  display:inline-block;font-size:10px;color:var(--green);
+  background:var(--green-soft);border-radius:99px;padding:2px 8px;margin-top:2px;
+}
+@media(max-width:700px){
+  .topbar{padding:0 15px}
+  main{width:min(100% - 24px,920px);padding-top:30px}
+  .feature-grid{grid-template-columns:1fr}
+  .section-card{padding:20px}
+  .step-card{padding:22px}
+}
+</style>
 </head>
 <body>
-  <div class="app">
-    <header class="header">
-      <div>
-        <p class="eyebrow">MY STUDY LOG</p>
-        <h1>自学ログ</h1>
-        <p class="subtitle">自分の言葉で、学びを残す。</p>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-main">自学ログ</span>
+      <span class="brand-sub">JIGAKU LOG</span>
+    </div>
+    <button class="icon-btn" id="userMenuBtn" aria-label="ユーザー切り替え">◯</button>
+  </header>
+
+  <main>
+    <section id="setupView" class="setup-wrap hidden">
+      <div class="setup-card">
+        <div class="eyebrow">WELCOME</div>
+        <h1 class="setup-title">自学ログへようこそ。</h1>
+        <p class="setup-desc">まずは、このログを使うあなたの名前を登録します。</p>
+        <label class="field-label" for="firstUserName">ユーザー名</label>
+        <input class="text-input" id="firstUserName" maxlength="30" placeholder="例：〇〇" autocomplete="off">
+        <div class="error" id="setupError"></div>
+        <button class="primary" id="createFirstUserBtn">はじめる</button>
       </div>
-      <button id="userButton" class="user-button hidden" type="button">
-        <span>●</span><span id="currentUserName"></span><span>⌄</span>
-      </button>
-    </header>
+      <div class="footer-note">記録はこの端末のブラウザ内に保存されます。</div>
+    </section>
 
-    <main>
-      <section id="welcome" class="card welcome">
-        <div class="mark">自</div>
-        <h2>自学ログへようこそ</h2>
-        <p>まず、この端末で使うユーザー名を登録します。</p>
-        <form id="firstUserForm">
-          <label for="firstUserName">ユーザー名</label>
-          <input id="firstUserName" maxlength="30" placeholder="例：わたし" required>
-          <button class="primary" type="submit">はじめる</button>
-        </form>
-      </section>
+    <section id="homeView" class="hidden">
+      <div class="hero">
+        <div class="eyebrow">MY STUDY RECORD</div>
+        <h1>好きなことを、<br>自分の言葉で残す。</h1>
+        <p class="lead">調べたこと、引っかかったこと、そこから考えたこと。自分の学びが少しずつ積み重なっていく場所です。</p>
+      </div>
 
-      <section id="home" class="hidden">
-        <p class="eyebrow">HOME</p>
-        <h2>こんにちは、<span id="homeUserName"></span>さん</h2>
+      <div class="step-card">
+        <div class="step-label">CURRENT STEP</div>
+        <div class="step-title">STEP 1　土台をつくる</div>
+        <div class="step-text">まずは「誰のログなのか」を決めるところから始めています。</div>
+      </div>
 
-        <div class="card">
-          <div class="number">01</div>
-          <div>
-            <h3>自学ログ</h3>
-            <p>ここに、あなたの学びが積み重なっていきます。</p>
-            <small>ログの入力機能はSTEP 2で追加します。</small>
+      <div class="section-card">
+        <h2 class="section-title">このアプリでできること</h2>
+        <p class="section-desc">これから少しずつ機能を増やしていきます。</p>
+        <div class="feature-grid">
+          <div class="feature">
+            <div class="feature-num">01</div>
+            <div class="feature-title">自分の言葉で記録</div>
+            <div class="feature-text">調べてわかったことや、自分の考えを残します。</div>
+          </div>
+          <div class="feature">
+            <div class="feature-num">02</div>
+            <div class="feature-title">あとから探す</div>
+            <div class="feature-text">過去のログを検索して、学びを振り返れます。</div>
+          </div>
+          <div class="feature">
+            <div class="feature-num">03</div>
+            <div class="feature-title">つながりを見つける</div>
+            <div class="feature-text">別々に見えた興味や記録のつながりを育てます。</div>
           </div>
         </div>
-
-        <div class="card info">
-          <h3>STEP 1でできること</h3>
-          <ul>
-            <li>この端末にユーザーを登録する</li>
-            <li>ユーザーごとにデータを分けて保存する</li>
-            <li>ユーザーを切り替える</li>
-            <li>あとからユーザーを追加する</li>
-          </ul>
-        </div>
-      </section>
-    </main>
-  </div>
-
-  <div id="panel" class="overlay hidden">
-    <div class="backdrop" id="closePanel"></div>
-    <section class="panel">
-      <div class="panel-head">
-        <div>
-          <p class="eyebrow">USER</p>
-          <h2>ユーザー</h2>
-        </div>
-        <button id="closeButton" class="close" type="button">×</button>
       </div>
 
-      <div id="userList" class="user-list"></div>
+      <div class="section-card">
+        <h2 class="section-title">現在のユーザー</h2>
+        <p class="section-desc">ユーザーを切り替えると、それぞれのログを分けて管理できます。</p>
+        <div id="homeUserList"></div>
+      </div>
 
-      <form id="addUserForm">
-        <label for="newUserName">ユーザーを追加</label>
-        <div class="add-row">
-          <input id="newUserName" maxlength="30" placeholder="ユーザー名">
-          <button class="secondary" type="submit">追加</button>
-        </div>
-        <p id="message" class="message"></p>
-      </form>
-
-      <p class="storage">ユーザー情報は、このブラウザの端末内に保存されます。</p>
+      <div class="footer-note">記録はこの端末のブラウザ内に保存されます。STEP 5でバックアップ機能を追加する予定です。</div>
     </section>
-  </div>
+  </main>
+</div>
 
-  <div id="toast" class="toast"></div>
-  <script src="app.js"></script>
+<div class="overlay" id="overlay"></div>
+<aside class="user-panel" id="userPanel" aria-label="ユーザー管理">
+  <div class="panel-head">
+    <div class="panel-title">ユーザー</div>
+    <button class="icon-btn" id="closePanelBtn" aria-label="閉じる">×</button>
+  </div>
+  <div id="panelUserList"></div>
+  <div class="add-user">
+    <label class="small-label" for="newUserName">新しいユーザーを追加</label>
+    <input class="text-input" id="newUserName" maxlength="30" placeholder="ユーザー名" autocomplete="off">
+    <div class="error" id="addUserError"></div>
+    <button class="primary" id="addUserBtn">ユーザーを追加</button>
+  </div>
+</aside>
+
+<script>
+const DB_NAME = "JigakuLogDB";
+const DB_VERSION = 1;
+const USER_STORE = "users";
+const META_STORE = "meta";
+const CURRENT_USER_KEY = "currentUserId";
+
+let db = null;
+let users = [];
+let currentUserId = null;
+
+function openDB(){
+  return new Promise((resolve,reject)=>{
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+    request.onupgradeneeded = event => {
+      const database = event.target.result;
+      if(!database.objectStoreNames.contains(USER_STORE)){
+        database.createObjectStore(USER_STORE,{keyPath:"id"});
+      }
+      if(!database.objectStoreNames.contains(META_STORE)){
+        database.createObjectStore(META_STORE,{keyPath:"key"});
+      }
+    };
+
+    request.onsuccess = event => {
+      db = event.target.result;
+      resolve(db);
+    };
+
+    request.onerror = () => reject(request.error);
+  });
+}
+
+function getAllUsers(){
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction(USER_STORE,"readonly");
+    const request = tx.objectStore(USER_STORE).getAll();
+    request.onsuccess = () => resolve(request.result || []);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+function addUser(name){
+  return new Promise((resolve,reject)=>{
+    const user = {
+      id: crypto.randomUUID(),
+      name: name.trim(),
+      createdAt: Date.now()
+    };
+    const tx = db.transaction(USER_STORE,"readwrite");
+    tx.objectStore(USER_STORE).add(user);
+    tx.oncomplete = () => resolve(user);
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+function saveCurrentUserId(id){
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction(META_STORE,"readwrite");
+    tx.objectStore(META_STORE).put({key:CURRENT_USER_KEY,value:id});
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+function getCurrentUserId(){
+  return new Promise((resolve,reject)=>{
+    const tx = db.transaction(META_STORE,"readonly");
+    const request = tx.objectStore(META_STORE).get(CURRENT_USER_KEY);
+    request.onsuccess = () => resolve(request.result?.value || null);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+function initials(name){
+  return [...name.trim()][0] || "？";
+}
+
+function escapeHTML(value){
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function renderUserLists(){
+  const home = document.getElementById("homeUserList");
+  const panel = document.getElementById("panelUserList");
+
+  if(!users.length){
+    home.innerHTML = '<div class="empty">ユーザーがまだ登録されていません。</div>';
+    panel.innerHTML = '<div class="empty">ユーザーがまだ登録されていません。</div>';
+    return;
+  }
+
+  const makeRow = user => {
+    const active = user.id === currentUserId;
+    return `
+      <div class="user-row">
+        <div class="user-info">
+          <div class="avatar">${escapeHTML(initials(user.name))}</div>
+          <div>
+            <div class="user-name">${escapeHTML(user.name)}</div>
+            ${active ? '<div class="current-badge">使用中</div>' : ''}
+          </div>
+        </div>
+        ${active ? '' : `<button class="secondary switch-user" data-id="${user.id}">切り替える</button>`}
+      </div>
+    `;
+  };
+
+  home.innerHTML = users.map(makeRow).join("");
+  panel.innerHTML = users.map(makeRow).join("");
+
+  document.querySelectorAll(".switch-user").forEach(button=>{
+    button.addEventListener("click", async ()=>{
+      await switchUser(button.dataset.id);
+    });
+  });
+}
+
+async function switchUser(id){
+  currentUserId = id;
+  await saveCurrentUserId(id);
+  renderUserLists();
+  closePanel();
+}
+
+function showView(){
+  const setup = document.getElementById("setupView");
+  const home = document.getElementById("homeView");
+
+  if(users.length === 0){
+    setup.classList.remove("hidden");
+    home.classList.add("hidden");
+    document.getElementById("userMenuBtn").classList.add("hidden");
+  }else{
+    setup.classList.add("hidden");
+    home.classList.remove("hidden");
+    document.getElementById("userMenuBtn").classList.remove("hidden");
+  }
+}
+
+async function initialize(){
+  try{
+    await openDB();
+    users = await getAllUsers();
+    currentUserId = await getCurrentUserId();
+
+    if(currentUserId && !users.some(user=>user.id === currentUserId)){
+      currentUserId = null;
+    }
+
+    if(!currentUserId && users.length){
+      currentUserId = users[0].id;
+      await saveCurrentUserId(currentUserId);
+    }
+
+    renderUserLists();
+    showView();
+  }catch(error){
+    console.error(error);
+    document.body.innerHTML = '<main style="padding:30px"><h1>読み込みに失敗しました</h1><p>ブラウザのIndexedDBが利用できる状態か確認してください。</p></main>';
+  }
+}
+
+document.getElementById("createFirstUserBtn").addEventListener("click", async ()=>{
+  const input = document.getElementById("firstUserName");
+  const error = document.getElementById("setupError");
+  const name = input.value.trim();
+
+  if(!name){
+    error.textContent = "ユーザー名を入力してください。";
+    input.focus();
+    return;
+  }
+
+  error.textContent = "";
+  const user = await addUser(name);
+  users = await getAllUsers();
+  currentUserId = user.id;
+  await saveCurrentUserId(currentUserId);
+  renderUserLists();
+  showView();
+});
+
+document.getElementById("firstUserName").addEventListener("keydown", event=>{
+  if(event.key === "Enter") document.getElementById("createFirstUserBtn").click();
+});
+
+document.getElementById("addUserBtn").addEventListener("click", async ()=>{
+  const input = document.getElementById("newUserName");
+  const error = document.getElementById("addUserError");
+  const name = input.value.trim();
+
+  if(!name){
+    error.textContent = "ユーザー名を入力してください。";
+    input.focus();
+    return;
+  }
+
+  if(users.some(user=>user.name === name)){
+    error.textContent = "同じ名前のユーザーがすでにあります。";
+    input.focus();
+    return;
+  }
+
+  error.textContent = "";
+  const user = await addUser(name);
+  users = await getAllUsers();
+  currentUserId = user.id;
+  await saveCurrentUserId(currentUserId);
+  input.value = "";
+  renderUserLists();
+  closePanel();
+});
+
+document.getElementById("newUserName").addEventListener("keydown", event=>{
+  if(event.key === "Enter") document.getElementById("addUserBtn").click();
+});
+
+function openPanel(){
+  document.getElementById("overlay").classList.add("open");
+  document.getElementById("userPanel").classList.add("open");
+}
+function closePanel(){
+  document.getElementById("overlay").classList.remove("open");
+  document.getElementById("userPanel").classList.remove("open");
+}
+
+document.getElementById("userMenuBtn").addEventListener("click",openPanel);
+document.getElementById("closePanelBtn").addEventListener("click",closePanel);
+document.getElementById("overlay").addEventListener("click",closePanel);
+
+initialize();
+</script>
 </body>
 </html>
