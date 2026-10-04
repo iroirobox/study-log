@@ -33,6 +33,10 @@ main{width:min(920px,calc(100% - 32px));margin:0 auto;padding:38px 0 70px}.hero{
     .linked-log-title{font-weight:600}
     .linked-log-meta{font-size:12px;color:var(--muted);margin-top:3px}
     .step5-note{font-size:13px;color:var(--muted);line-height:1.7}
+
+.reading-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap}.reading-count{font-size:12px;color:var(--muted)}
+.reading-book{background:var(--paper);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);overflow:hidden}.reading-cover{padding:42px 30px 36px;background:var(--green);color:#fff;min-height:230px;display:flex;flex-direction:column;justify-content:flex-end}.reading-cover-label{font-size:11px;letter-spacing:.16em;opacity:.72;margin-bottom:10px}.reading-cover h2{font-family:Georgia,"Times New Roman","Yu Mincho",YuMincho,serif;font-weight:500;font-size:32px;line-height:1.35;margin:0 0 8px}.reading-cover p{margin:0;font-size:13px;opacity:.82}.reading-toc{padding:24px 26px;border-bottom:1px solid var(--line)}.reading-toc-title{font-weight:700;margin-bottom:12px}.reading-toc-list{display:grid;gap:6px}.reading-toc-item{display:flex;gap:10px;align-items:baseline;padding:9px 0;border-bottom:1px dashed var(--line);background:none;border-left:0;border-right:0;border-top:0;text-align:left;width:100%;color:var(--text)}.reading-toc-item:hover{color:var(--green-dark)}.reading-toc-num{font-size:11px;color:var(--muted);min-width:24px}.reading-entry{padding:34px 30px;border-bottom:1px solid var(--line);scroll-margin-top:90px}.reading-entry:last-child{border-bottom:0}.reading-entry-num{font-size:11px;color:var(--green);letter-spacing:.12em;font-weight:700;margin-bottom:6px}.reading-entry-title{font-family:Georgia,"Times New Roman","Yu Mincho",YuMincho,serif;font-size:25px;line-height:1.45;margin:0 0 7px}.reading-entry-meta{font-size:11px;color:var(--muted);margin-bottom:22px}.reading-section{margin:22px 0}.reading-section-label{font-size:10px;letter-spacing:.1em;font-weight:700;color:var(--green);margin-bottom:6px}.reading-section-content{white-space:pre-wrap;font-size:14px;line-height:2}.reading-related{margin-top:22px;padding-top:18px;border-top:1px dashed var(--line)}.reading-related-list{display:flex;flex-wrap:wrap;gap:7px}.reading-related-btn{border:1px solid var(--line);background:var(--paper-soft);border-radius:999px;padding:6px 10px;font-size:11px;color:var(--green-dark)}.reading-related-btn:hover{background:var(--green-soft)}
+@media(max-width:700px){.reading-cover{padding:32px 22px}.reading-entry{padding:28px 21px}.reading-toc{padding:20px 21px}.reading-entry-title{font-size:23px}}
 </style>
 </head>
 <body>
@@ -60,9 +64,9 @@ main{width:min(920px,calc(100% - 32px));margin:0 auto;padding:38px 0 70px}.hero{
 
 <section id="homeView" class="hidden">
   <div class="hero"><div class="eyebrow">MY STUDY RECORD</div><h1>好きなことを、<br>自分の言葉で残す。</h1><p class="lead">調べたこと、引っかかったこと、そこから考えたこと。自分の学びが少しずつ積み重なっていく場所です。</p></div>
-  <div class="step-card"><div class="step-label">CURRENT STEP</div><div class="step-title">STEP 5　学びをつなげる</div><div class="step-text">過去のログ同士をつないで、学びの流れを振り返れます。</div></div>
+  <div class="step-card"><div class="step-label">CURRENT STEP</div><div class="step-title">STEP 6　本棚のように読む</div><div class="step-text">積み重ねたログを、ひとつの本のように読み返せます。</div></div>
   <div class="section-card">
-    <div class="page-head"><div><h2 class="section-title">学びを記録する</h2><p class="section-desc">その日の入口から、次に知りたいことまで残せます。</p></div><div class="actions"><button class="primary" id="newLogBtn">＋ 新しいログ</button></div></div>
+    <div class="page-head"><div><h2 class="section-title">学びを記録する</h2><p class="section-desc">その日の入口から、次に知りたいことまで残せます。</p></div><div class="actions"><button class="secondary" id="readingBtn">本棚のように読む</button><button class="primary" id="newLogBtn">＋ 新しいログ</button></div></div>
     <div class="search-wrap"><span class="search-icon">⌕</span><input class="search-input" id="homeSearchInput" placeholder="テーマ・分野・キーワードで検索" autocomplete="off"></div>
     <div class="count-note" id="homeCount"></div>
     <div id="homeLogList"></div>
@@ -70,6 +74,12 @@ main{width:min(920px,calc(100% - 32px));margin:0 auto;padding:38px 0 70px}.hero{
   <div class="section-card"><h2 class="section-title">現在のユーザー</h2><p class="section-desc">ユーザーを切り替えると、それぞれのログを分けて管理できます。</p><div id="homeUserList"></div></div>
   <div class="section-card"><h2 class="section-title">データを守る</h2><p class="section-desc">機種変更やブラウザのデータ消失に備えて、定期的にバックアップできます。</p><div class="backup-actions"><button class="secondary" id="backupBtn">バックアップ</button><button class="secondary" id="restoreBtn">復元</button></div><p class="backup-note">バックアップはJSONファイルとして保存されます。復元すると、このアプリ内の現在のデータが置き換わります。</p><input type="file" id="restoreFile" accept="application/json,.json" class="hidden"></div>
 <div class="footer-note">記録はこの端末のブラウザ内に保存されます。大切な記録は定期的にバックアップしてください。</div>
+</section>
+
+<section id="readingView" class="hidden">
+  <div class="page-head"><div><div class="eyebrow">MY STUDY BOOK</div><h1 class="page-title">本棚のように読む</h1><p class="page-desc" id="readingUserDesc"></p></div><div class="actions"><button class="secondary" id="readingBackBtn">ホーム</button></div></div>
+  <div class="reading-toolbar"><div class="reading-count" id="readingCount"></div><button class="secondary" id="readingNewestBtn">新しい順</button></div>
+  <div id="readingBook"></div>
 </section>
 
 <section id="logListView" class="hidden">
@@ -150,7 +160,7 @@ function renderUserLists(){const home=document.getElementById("homeUserList"),pa
 async function switchUser(id){if(!users.some(u=>u.id===id))return;currentUserId=id;await saveCurrentUserId(id);renderUserLists();closePanel();await refreshHomeLogs()}
 function showOnly(id){["homeView","logListView","logFormView","logDetailView"].forEach(view=>document.getElementById(view).classList.add("hidden"));document.getElementById(id).classList.remove("hidden")}
 function showMainView(){document.getElementById("setupView").classList.add("hidden");document.getElementById("userMenuBtn").classList.remove("hidden");showOnly("homeView")}
-function showSetup(){document.getElementById("setupView").classList.remove("hidden");["homeView","logListView","logFormView","logDetailView"].forEach(id=>document.getElementById(id).classList.add("hidden"));document.getElementById("userMenuBtn").classList.add("hidden")}
+function showSetup(){document.getElementById("setupView").classList.remove("hidden");["homeView","readingView","logListView","logFormView","logDetailView"].forEach(id=>document.getElementById(id).classList.add("hidden"));document.getElementById("userMenuBtn").classList.add("hidden")}
 function renderLogCards(logs,targetId){const target=document.getElementById(targetId);if(!logs.length){target.innerHTML='<div class="empty-card">まだ自学ログがありません。<br>最初の一件を、自分の言葉で残してみましょう。</div>';return}target.innerHTML='<div class="log-list">'+logs.map(log=>`<article class="log-card" data-id="${log.id}"><div class="log-meta"><span>${formatDate(log.createdAt)}</span>${log.field?'<span class="tag">'+escapeHTML(log.field)+'</span>':''}</div><div class="log-title">${escapeHTML(log.title)}</div><div class="log-preview">${escapeHTML(log.thought||log.known||log.entrance||"")}</div>${log.keywords?'<div class="log-meta" style="margin-top:9px">'+escapeHTML(log.keywords)+'</div>':''}</article>`).join('')+'</div>';target.querySelectorAll('.log-card').forEach(card=>card.addEventListener('click',()=>openLogDetail(card.dataset.id)))}
 function filterLogs(logs,query){const q=query.trim().toLowerCase();if(!q)return logs;return logs.filter(log=>[log.title,log.field,log.keywords,log.entrance,log.known,log.question,log.thought,log.next,log.memo].join(" ").toLowerCase().includes(q))}
 async function refreshHomeLogs(){if(!currentUserId)return;allCurrentUserLogs=await getLogsForUser(currentUserId);const q=document.getElementById("homeSearchInput").value;const filtered=filterLogs(allCurrentUserLogs,q);document.getElementById("homeCount").textContent=`${filtered.length}件のログ`;renderLogCards(filtered,"homeLogList")}
@@ -173,6 +183,35 @@ async function renderRelatedLogs(log){
   if(!related.length){block.classList.add('hidden');return}
   block.classList.remove('hidden'); body.innerHTML=related.map(item=>`<button class="linked-log" data-linked-id="${escapeHTML(item.id)}"><div class="linked-log-title">${escapeHTML(item.title)}</div><div class="linked-log-meta">${formatDate(item.createdAt)}${item.field?' · '+escapeHTML(item.field):''}</div></button>`).join('');
   body.querySelectorAll('.linked-log').forEach(btn=>btn.addEventListener('click',()=>openLogDetail(btn.dataset.linkedId)));
+}
+
+async function openReadingView(){
+  const user=currentUser();
+  document.getElementById("readingUserDesc").textContent=user?`${user.name}さんの学びを読み返す`:'自学ログ';
+  showOnly("readingView");
+  await renderReadingBook();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function readingTextBlock(label,value){
+  if(!value||!value.trim())return '';
+  return `<div class="reading-section"><div class="reading-section-label">${label}</div><div class="reading-section-content">${escapeHTML(value)}</div></div>`;
+}
+async function renderReadingBook(){
+  const logs=await getLogsForUser(currentUserId);
+  document.getElementById("readingCount").textContent=`全 ${logs.length} 件`;
+  const book=document.getElementById("readingBook");
+  if(!logs.length){book.innerHTML='<div class="empty-card">まだ自学ログがありません。<br>最初の一冊を、自分の言葉でつくっていきましょう。</div>';return;}
+  const toc=logs.map((log,i)=>`<button class="reading-toc-item" data-entry="${escapeHTML(log.id)}"><span class="reading-toc-num">${String(i+1).padStart(2,'0')}</span><span>${escapeHTML(log.title)}</span></button>`).join('');
+  let entries='';
+  for(let i=0;i<logs.length;i++){
+    const log=logs[i];
+    const related=Array.isArray(log.relatedLogIds)?(await Promise.all(log.relatedLogIds.map(getLog))).filter(x=>x&&x.userId===currentUserId):[];
+    const relatedHtml=related.length?`<div class="reading-related"><div class="reading-section-label">関連するログ</div><div class="reading-related-list">${related.map(x=>`<button class="reading-related-btn" data-related-entry="${escapeHTML(x.id)}">${escapeHTML(x.title)}</button>`).join('')}</div></div>`:'';
+    entries+=`<article class="reading-entry" id="reading-entry-${escapeHTML(log.id)}"><div class="reading-entry-num">LOG ${String(i+1).padStart(2,'0')}</div><h2 class="reading-entry-title">${escapeHTML(log.title)}</h2><div class="reading-entry-meta">${formatDate(log.createdAt)}${log.field?' · '+escapeHTML(log.field):''}${log.keywords?' · '+escapeHTML(log.keywords):''}</div>${readingTextBlock('今日の入口',log.entrance)}${readingTextBlock('調べてわかったこと',log.known)}${readingTextBlock('自分の引っかかり',log.question)}${readingTextBlock('今の自分の理解・考え',log.thought)}${readingTextBlock('次に調べたいこと',log.next)}${readingTextBlock('今日の一言',log.memo)}${relatedHtml}</article>`;
+  }
+  book.innerHTML=`<div class="reading-book"><div class="reading-cover"><div class="reading-cover-label">MY STUDY BOOK</div><h2>${escapeHTML(currentUser()?.name||'自学ログ')}の学び</h2><p>調べたこと、考えたこと、次に気になること。</p></div><div class="reading-toc"><div class="reading-toc-title">目次</div><div class="reading-toc-list">${toc}</div></div>${entries}</div>`;
+  book.querySelectorAll('.reading-toc-item').forEach(btn=>btn.addEventListener('click',()=>document.getElementById(`reading-entry-${btn.dataset.entry}`)?.scrollIntoView({behavior:'smooth',block:'start'})));
+  book.querySelectorAll('.reading-related-btn').forEach(btn=>btn.addEventListener('click',()=>document.getElementById(`reading-entry-${btn.dataset.relatedEntry}`)?.scrollIntoView({behavior:'smooth',block:'start'})));
 }
 async function openNewLog(){editingLogId=null;resetForm();document.getElementById("formEyebrow").textContent="NEW STUDY LOG";document.getElementById("formTitle").textContent="新しいログ";document.getElementById("saveLogBtn").textContent="保存する";document.getElementById("relatedLogSearch").value="";showOnly("logFormView");renderRelatedLogPicker([]);window.scrollTo({top:0,behavior:"smooth"})}
 async function openEditLog(log){editingLogId=log.id;document.getElementById("formEyebrow").textContent="EDIT STUDY LOG";document.getElementById("formTitle").textContent="ログを編集";document.getElementById("logTitle").value=log.title||"";document.getElementById("logField").value=log.field||"";document.getElementById("logKeywords").value=log.keywords||"";document.getElementById("logEntrance").value=log.entrance||"";document.getElementById("logKnown").value=log.known||"";document.getElementById("logQuestion").value=log.question||"";document.getElementById("logThought").value=log.thought||"";document.getElementById("logNext").value=log.next||"";document.getElementById("logMemo").value=log.memo||"";document.getElementById("relatedLogSearch").value="";document.getElementById("formError").textContent="";document.getElementById("saveLogBtn").textContent="変更を保存";showOnly("logFormView");renderRelatedLogPicker(Array.isArray(log.relatedLogIds)?log.relatedLogIds:[]);window.scrollTo({top:0,behavior:"smooth"})}
@@ -200,7 +239,7 @@ document.getElementById("editUserName").addEventListener("keydown",e=>{if(e.key=
 document.getElementById("closeEditUserBtn").addEventListener("click",closeEditUser);document.getElementById("cancelEditUserBtn").addEventListener("click",closeEditUser);
 document.getElementById("editUserModal").addEventListener("click",e=>{if(e.target.id==="editUserModal")closeEditUser()});
 document.getElementById("userMenuBtn").addEventListener("click",openPanel);document.getElementById("closePanelBtn").addEventListener("click",closePanel);document.getElementById("overlay").addEventListener("click",closePanel);
-document.getElementById("newLogBtn").addEventListener("click",openNewLog);document.getElementById("listNewLogBtn").addEventListener("click",openNewLog);document.getElementById("listHomeBtn").addEventListener("click",()=>{showMainView();refreshHomeLogs()});
+document.getElementById("newLogBtn").addEventListener("click",openNewLog);document.getElementById("readingBtn").addEventListener("click",openReadingView);document.getElementById("readingBackBtn").addEventListener("click",()=>{showMainView();refreshHomeLogs()});document.getElementById("readingNewestBtn").addEventListener("click",renderReadingBook);document.getElementById("listNewLogBtn").addEventListener("click",openNewLog);document.getElementById("listHomeBtn").addEventListener("click",()=>{showMainView();refreshHomeLogs()});
 document.getElementById("homeSearchInput").addEventListener("input",()=>refreshHomeLogs());document.getElementById("relatedLogSearch").addEventListener("input",()=>{const checked=getRelatedIdsFromForm();renderRelatedLogPicker(checked)});document.getElementById("listSearchInput").addEventListener("input",()=>{const filtered=filterLogs(allCurrentUserLogs,document.getElementById("listSearchInput").value);document.getElementById("listCount").textContent=`${filtered.length}件のログ`;renderLogCards(filtered,"logList")});
 document.getElementById("formBackBtn").addEventListener("click",()=>{showMainView();refreshHomeLogs()});document.getElementById("formCancelBtn").addEventListener("click",()=>{if(currentDetailLog)openLogDetail(currentDetailLog.id);else{showMainView();refreshHomeLogs()}});
 document.getElementById("detailBackBtn").addEventListener("click",()=>{showMainView();refreshHomeLogs()});document.getElementById("detailEditBtn").addEventListener("click",()=>{if(currentDetailLog)openEditLog(currentDetailLog)});
