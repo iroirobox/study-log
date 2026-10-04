@@ -39,14 +39,17 @@ main{width:min(920px,calc(100% - 32px));margin:0 auto;padding:38px 0 70px}.hero{
 @media(max-width:700px){.reading-cover{padding:32px 22px}.reading-entry{padding:28px 21px}.reading-toc{padding:20px 21px}.reading-entry-title{font-size:23px}}
 
 @media print{
+  @page{size:A5; margin:12mm 14mm}
   body{background:#fff!important}
   .topbar,.page-head,.reading-toolbar,.actions,.step-card,#homeView,#logListView,#logFormView,#logDetailView,.user-panel,.overlay,.modal{display:none!important}
   main{width:100%;margin:0;padding:0}
   #readingView{display:block!important}
   .reading-book{border:0!important;box-shadow:none!important;border-radius:0!important}
-  .reading-cover{min-height:180px;page-break-after:always}
-  .reading-entry{break-inside:avoid;page-break-inside:avoid}
-  .reading-toc{page-break-after:always}
+  .reading-cover{min-height:170mm;page-break-after:always;break-after:page;display:flex!important;flex-direction:column;justify-content:center}
+  .reading-toc{page-break-after:always;break-after:page}
+  .reading-entry{break-before:page;page-break-before:always;break-inside:auto;page-break-inside:auto}
+  .reading-entry:first-of-type{break-before:auto;page-break-before:auto}
+  .reading-related-btn{color:#000!important;text-decoration:none!important}
 }
 </style>
 </head>
@@ -94,7 +97,7 @@ main{width:min(920px,calc(100% - 32px));margin:0 auto;padding:38px 0 70px}.hero{
 </section>
 
 <section id="logListView" class="hidden">
-  <div class="page-head"><div><div class="eyebrow">MY STUDY LOGS</div><h1 class="page-title">自学ログ</h1><p class="page-desc" id="listUserDesc"></p></div><div class="actions"><button class="secondary" id="listHomeBtn">ホーム</button><button class="secondary" id="listReadingBtn">読む</button><button class="primary" id="listNewLogBtn">＋ 新しいログ</button></div></div>
+  <div class="page-head"><div><div class="eyebrow">MY STUDY LOGS</div><h1 class="page-title">自学ログ</h1><p class="page-desc" id="listUserDesc"></p></div><div class="actions"><button class="secondary" id="listHomeBtn">ホーム</button><button class="secondary" id="listReadingBtn">本棚</button><button class="primary" id="listNewLogBtn">＋ 新しいログ</button></div></div>
   <div class="search-wrap"><span class="search-icon">⌕</span><input class="search-input" id="listSearchInput" placeholder="テーマ・分野・キーワードで検索" autocomplete="off"></div>
   <div class="count-note" id="listCount"></div>
   <div id="logList"></div>
@@ -124,7 +127,7 @@ main{width:min(920px,calc(100% - 32px));margin:0 auto;padding:38px 0 70px}.hero{
 </section>
 
 <section id="logDetailView" class="hidden">
-  <div class="page-head"><div><div class="eyebrow">STUDY LOG</div><p class="page-desc">自分の言葉で残した記録</p></div><div class="actions"><button class="secondary" id="detailBackBtn">戻る</button><button class="secondary" id="detailPrintBtn">印刷・PDF保存</button><button class="secondary" id="detailEditBtn">編集</button><button class="danger" id="detailDeleteBtn">削除</button></div></div>
+  <div class="page-head"><div><div class="eyebrow">STUDY LOG</div><p class="page-desc">自分の言葉で残した記録</p></div><div class="actions"><button class="secondary" id="detailBackBtn">戻る</button><button class="secondary" id="detailEditBtn">編集</button><button class="danger" id="detailDeleteBtn">削除</button></div></div>
   <div class="section-card"><div class="detail-head"><h1 class="detail-title" id="detailTitle"></h1><div class="detail-meta" id="detailMeta"></div></div><div id="detailBody"></div><div id="relatedLogsBlock" class="detail-block hidden"><div class="detail-label">関連するログ</div><div id="relatedLogsBody"></div></div></div>
 </section>
 <section id="printLogView" class="hidden"><div class="section-card"><div class="detail-head"><h1 class="detail-title" id="printTitle"></h1><div class="detail-meta" id="printMeta"></div></div><div id="printBody"></div></div></section>
@@ -254,21 +257,11 @@ document.getElementById("editUserName").addEventListener("keydown",e=>{if(e.key=
 document.getElementById("closeEditUserBtn").addEventListener("click",closeEditUser);document.getElementById("cancelEditUserBtn").addEventListener("click",closeEditUser);
 document.getElementById("editUserModal").addEventListener("click",e=>{if(e.target.id==="editUserModal")closeEditUser()});
 document.getElementById("userMenuBtn").addEventListener("click",openPanel);document.getElementById("closePanelBtn").addEventListener("click",closePanel);document.getElementById("overlay").addEventListener("click",closePanel);
-function printReadingBook(){window.print()}
-function prepareSingleLogPrint(log){
-  if(!log)return;
-  document.getElementById('printTitle').textContent=log.title||'';
-  const meta=[formatDate(log.createdAt)]; if(log.field)meta.push(log.field); if(log.keywords)meta.push(log.keywords);
-  document.getElementById('printMeta').innerHTML=meta.map(x=>`<span>${escapeHTML(x)}</span>`).join(' · ');
-  const blocks=[['今日の入口',log.entrance],['調べてわかったこと',log.known],['自分の引っかかり',log.question],['今の自分の理解・考え',log.thought],['次に調べたいこと',log.next],['今日の一言',log.memo]];
-  document.getElementById('printBody').innerHTML=blocks.filter(([,v])=>v&&v.trim()).map(([label,value])=>`<div class="detail-block"><div class="detail-label">${label}</div><div class="detail-content">${escapeHTML(value)}</div></div>`).join('');
-  const old={home:document.getElementById('homeView').classList.contains('hidden'),list:document.getElementById('logListView').classList.contains('hidden'),form:document.getElementById('logFormView').classList.contains('hidden'),detail:document.getElementById('logDetailView').classList.contains('hidden'),reading:document.getElementById('readingView').classList.contains('hidden')};
-  ['homeView','logListView','logFormView','logDetailView','readingView'].forEach(id=>document.getElementById(id).classList.add('hidden'));
-  document.getElementById('printLogView').classList.remove('hidden');
-  const restore=()=>{document.getElementById('printLogView').classList.add('hidden');document.getElementById('logDetailView').classList.remove('hidden');window.removeEventListener('afterprint',restore)};
-  window.addEventListener('afterprint',restore); setTimeout(()=>window.print(),80);
+function printReadingBook(){
+  // User-initiated print only: no timeout or automatic print after navigation.
+  window.print();
 }
-document.getElementById("newLogBtn").addEventListener("click",openNewLog);document.getElementById("readingPrintBtn").addEventListener("click",printReadingBook);document.getElementById("detailPrintBtn").addEventListener("click",()=>prepareSingleLogPrint(currentDetailLog));document.getElementById("readingBackBtn").addEventListener("click",()=>{showMainView();refreshHomeLogs()});document.getElementById("readingNewestBtn").addEventListener("click",()=>renderReadingBook("new"));document.getElementById("readingOldestBtn").addEventListener("click",()=>renderReadingBook("old"));document.getElementById("listNewLogBtn").addEventListener("click",openNewLog);document.getElementById("listReadingBtn").addEventListener("click",openReadingView);document.getElementById("listHomeBtn").addEventListener("click",()=>{showMainView();refreshHomeLogs()});
+document.getElementById("newLogBtn").addEventListener("click",openNewLog);document.getElementById("readingPrintBtn").addEventListener("click",printReadingBook);document.getElementById("readingBackBtn").addEventListener("click",()=>{showMainView();refreshHomeLogs()});document.getElementById("readingNewestBtn").addEventListener("click",()=>renderReadingBook("new"));document.getElementById("readingOldestBtn").addEventListener("click",()=>renderReadingBook("old"));document.getElementById("listNewLogBtn").addEventListener("click",openNewLog);document.getElementById("listReadingBtn").addEventListener("click",openReadingView);document.getElementById("listHomeBtn").addEventListener("click",()=>{showMainView();refreshHomeLogs()});
 document.getElementById("homeSearchInput").addEventListener("input",()=>refreshHomeLogs());document.getElementById("relatedLogSearch").addEventListener("input",()=>{const checked=getRelatedIdsFromForm();renderRelatedLogPicker(checked)});document.getElementById("listSearchInput").addEventListener("input",()=>{const filtered=filterLogs(allCurrentUserLogs,document.getElementById("listSearchInput").value);document.getElementById("listCount").textContent=`${filtered.length}件のログ`;renderLogCards(filtered,"logList")});
 document.getElementById("formBackBtn").addEventListener("click",()=>{showMainView();refreshHomeLogs()});document.getElementById("formCancelBtn").addEventListener("click",()=>{if(currentDetailLog)openLogDetail(currentDetailLog.id);else{showMainView();refreshHomeLogs()}});
 document.getElementById("detailBackBtn").addEventListener("click",()=>{showMainView();refreshHomeLogs()});document.getElementById("detailEditBtn").addEventListener("click",()=>{if(currentDetailLog)openEditLog(currentDetailLog)});
