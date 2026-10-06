@@ -75,16 +75,16 @@ main{width:min(920px,calc(100% - 32px));margin:0 auto;padding:34px 0 70px}.hero{
 .crop-control{margin:10px 0}.crop-control label{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px}.crop-control input[type=range]{width:100%}
 
 /* 自学ログ：入力項目の余白を統一 */
-#logForm .form-section{padding:0;margin:0 0 22px}
+#logForm .form-section{padding:0;margin:0 0 22px;display:grid;gap:18px}
 #logForm .form-section:last-of-type{margin-bottom:0}
-#logForm .field{margin:0 0 18px}
-#logForm .field:last-child{margin-bottom:0}
+#logForm .field{margin:0}
 #logForm .field-label{margin:0 0 7px;line-height:1.4}
-#logForm .two-col{column-gap:14px;row-gap:18px}
+#logForm .two-col{column-gap:14px;row-gap:0;margin:0}
 #logForm .two-col .field{margin:0}
 #logForm .form-hint{margin:0 0 10px}
 
 /* 本棚：検索と操作を整理 */
+.reading-page-head .actions{display:flex;align-items:center;gap:8px;flex-wrap:nowrap}.reading-page-head .actions .secondary{height:42px;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center}.reading-page-head .reading-export-top{padding:10px 15px}
 .reading-toolbar{display:block;margin-bottom:16px}
 .reading-search-row{width:100%}
 .reading-tools{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
@@ -134,10 +134,10 @@ main{width:min(920px,calc(100% - 32px));margin:0 auto;padding:34px 0 70px}.hero{
 </section>
 
 <section id="readingView" class="hidden">
-  <div class="page-head reading-page-head"><div><h1 class="page-title">本棚</h1></div><div class="actions"><button class="secondary" id="readingBackBtn">戻る</button></div></div>
+  <div class="page-head reading-page-head"><div><h1 class="page-title">本棚</h1></div><div class="actions"><button class="secondary reading-export-top" id="readingExportBtn">PDF・印刷</button><button class="secondary" id="readingBackBtn">戻る</button></div></div>
   <div class="reading-toolbar reading-sticky">
     <div class="reading-search-row"><div class="search-wrap"><span class="search-icon">⌕</span><input class="search-input" id="readingSearchInput" placeholder="ログを検索" autocomplete="off"></div></div>
-    <div class="reading-tools"><div class="reading-count" id="readingCount"></div><button class="secondary reading-export-top" id="readingExportBtn">PDF・印刷</button></div>
+    <div class="reading-tools"><div class="reading-count" id="readingCount"></div></div>
   </div>
   <div id="readingBook"></div>
 </section>
@@ -469,14 +469,12 @@ async function buildPdfFromLogs(logs,title){
   let coverY=PDF_PAGE_H/2-20;
   for(const line of wrapCanvasText(page.ctx,title,PDF_CONTENT_W-55)){page.ctx.fillText(line,PDF_MARGIN+34,coverY);coverY+=48;}
   page.ctx.font=pdfFont(12,false);page.ctx.fillStyle='#77766f';
-  page.ctx.fillText(`${logs.length}件の学び`,PDF_MARGIN+34,PDF_PAGE_H-110);
 
   // 目次：中央寄りの大きな見出し＋ゆったりした章一覧
   page=pdfNewPage(pages);
   page.ctx.fillStyle='#fffefa';page.ctx.fillRect(0,0,PDF_PAGE_W,PDF_PAGE_H);
   page.ctx.fillStyle='#526b51';page.ctx.font=pdfFont(11,true);page.ctx.fillText('CONTENTS',PDF_MARGIN,PDF_MARGIN+18);
   page.ctx.font=pdfFont(30,false);page.ctx.fillStyle='#24251f';page.ctx.fillText('目次',PDF_MARGIN,PDF_MARGIN+68);
-  page.ctx.font=pdfFont(10,false);page.ctx.fillStyle='#77766f';page.ctx.fillText('この本に収めた学び',PDF_MARGIN,PDF_MARGIN+94);
   let tocY=PDF_MARGIN+155;
   const tocRows=[];
   for(let i=0;i<logs.length;i++){
