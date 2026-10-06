@@ -73,6 +73,26 @@ main{width:min(920px,calc(100% - 32px));margin:0 auto;padding:34px 0 70px}.hero{
 #avatarCropCanvas{width:260px;height:260px;display:block;touch-action:none}
 .crop-help{font-size:11px;color:var(--muted);text-align:center;margin:-8px 0 14px}
 .crop-control{margin:10px 0}.crop-control label{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px}.crop-control input[type=range]{width:100%}
+
+/* 自学ログ：入力項目の余白を統一 */
+#logForm .form-section{padding:0;margin:0 0 22px}
+#logForm .form-section:last-of-type{margin-bottom:0}
+#logForm .field{margin:0 0 18px}
+#logForm .field:last-child{margin-bottom:0}
+#logForm .field-label{margin:0 0 7px;line-height:1.4}
+#logForm .two-col{column-gap:14px;row-gap:18px}
+#logForm .two-col .field{margin:0}
+#logForm .form-hint{margin:0 0 10px}
+
+/* 本棚：検索と操作を整理 */
+.reading-toolbar{display:block;margin-bottom:16px}
+.reading-search-row{width:100%}
+.reading-tools{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
+.reading-tools .reading-count{margin:0}
+.reading-export-top{flex:none}
+@media(max-width:700px){
+  .reading-tools{margin-top:9px}
+}
 </style>
 </head>
 <body>
@@ -115,8 +135,10 @@ main{width:min(920px,calc(100% - 32px));margin:0 auto;padding:34px 0 70px}.hero{
 
 <section id="readingView" class="hidden">
   <div class="page-head reading-page-head"><div><h1 class="page-title">本棚</h1></div><div class="actions"><button class="secondary" id="readingBackBtn">戻る</button></div></div>
-  <div class="reading-toolbar reading-sticky"><div class="search-wrap"><span class="search-icon">⌕</span><input class="search-input" id="readingSearchInput" placeholder="ログを検索" autocomplete="off"></div><button class="secondary reading-export-top" id="readingExportBtn">PDF・印刷</button></div>
-  <div class="reading-count" id="readingCount"></div>
+  <div class="reading-toolbar reading-sticky">
+    <div class="reading-search-row"><div class="search-wrap"><span class="search-icon">⌕</span><input class="search-input" id="readingSearchInput" placeholder="ログを検索" autocomplete="off"></div></div>
+    <div class="reading-tools"><div class="reading-count" id="readingCount"></div><button class="secondary reading-export-top" id="readingExportBtn">PDF・印刷</button></div>
+  </div>
   <div id="readingBook"></div>
 </section>
 
@@ -437,29 +459,58 @@ function collectLogImages(log){
 }
 async function buildPdfFromLogs(logs,title){
   const pages=[];window.__pdfPages=pages;
-  let page=pdfNewPage(pages);
-  page.ctx.fillStyle='#526b51';page.ctx.fillRect(0,0,PDF_PAGE_W,PDF_PAGE_H);
-  page.ctx.fillStyle='#fffefa';page.ctx.font=pdfFont(11,true);page.ctx.fillText('MY STUDY BOOK',PDF_MARGIN,PDF_MARGIN+18);
-  page.ctx.font=pdfFont(34,false);
-  let coverY=PDF_PAGE_H-160;
-  for(const line of wrapCanvasText(page.ctx,title,PDF_CONTENT_W)){page.ctx.fillText(line,PDF_MARGIN,coverY);coverY+=46;}
-  page.ctx.font=pdfFont(13,false);page.ctx.fillText(`${logs.length}件の学び`,PDF_MARGIN,PDF_PAGE_H-95);
 
-  page=pdfNewPage(pages);page.ctx.font=pdfFont(24,true);page.ctx.fillStyle='#24251f';page.ctx.fillText('目次',PDF_MARGIN,page.y);page.y+=42;
-  page.ctx.font=pdfFont(12,false);
+  // 表紙：余白を大きく取り、冊子の表紙らしく中央寄りに配置
+  let page=pdfNewPage(pages);
+  page.ctx.fillStyle='#fffefa';page.ctx.fillRect(0,0,PDF_PAGE_W,PDF_PAGE_H);
+  page.ctx.fillStyle='#526b51';page.ctx.fillRect(PDF_MARGIN,PDF_MARGIN,5,PDF_PAGE_H-PDF_MARGIN*2);
+  page.ctx.font=pdfFont(11,true);page.ctx.fillText('自学ログ',PDF_MARGIN+34,PDF_MARGIN+28);
+  page.ctx.font=pdfFont(32,false);page.ctx.fillStyle='#24251f';
+  let coverY=PDF_PAGE_H/2-20;
+  for(const line of wrapCanvasText(page.ctx,title,PDF_CONTENT_W-55)){page.ctx.fillText(line,PDF_MARGIN+34,coverY);coverY+=48;}
+  page.ctx.font=pdfFont(12,false);page.ctx.fillStyle='#77766f';
+  page.ctx.fillText(`${logs.length}件の学び`,PDF_MARGIN+34,PDF_PAGE_H-110);
+
+  // 目次：中央寄りの大きな見出し＋ゆったりした章一覧
+  page=pdfNewPage(pages);
+  page.ctx.fillStyle='#fffefa';page.ctx.fillRect(0,0,PDF_PAGE_W,PDF_PAGE_H);
+  page.ctx.fillStyle='#526b51';page.ctx.font=pdfFont(11,true);page.ctx.fillText('CONTENTS',PDF_MARGIN,PDF_MARGIN+18);
+  page.ctx.font=pdfFont(30,false);page.ctx.fillStyle='#24251f';page.ctx.fillText('目次',PDF_MARGIN,PDF_MARGIN+68);
+  page.ctx.font=pdfFont(10,false);page.ctx.fillStyle='#77766f';page.ctx.fillText('この本に収めた学び',PDF_MARGIN,PDF_MARGIN+94);
+  let tocY=PDF_MARGIN+155;
+  const tocRows=[];
   for(let i=0;i<logs.length;i++){
-    const lines=wrapCanvasText(page.ctx,`${String(i+1).padStart(2,'0')}  ${logs[i].title}`,PDF_CONTENT_W);
-    for(const line of lines){if(page.y>PDF_PAGE_H-PDF_MARGIN-28)page=pdfNewPage(pages);page.ctx.fillText(line,PDF_MARGIN,page.y);page.y+=26;}
+    const titleLines=wrapCanvasText(page.ctx,String(logs[i].title||'無題'),PDF_CONTENT_W-120);
+    const rowH=Math.max(54,titleLines.length*22+20);
+    tocRows.push({i,titleLines,rowH});
+  }
+  for(const row of tocRows){
+    if(tocY+row.rowH>PDF_PAGE_H-PDF_MARGIN){page=pdfNewPage(pages);page.ctx.fillStyle='#fffefa';page.ctx.fillRect(0,0,PDF_PAGE_W,PDF_PAGE_H);tocY=PDF_MARGIN+45;}
+    page.ctx.font=pdfFont(11,true);page.ctx.fillStyle='#526b51';
+    page.ctx.fillText(String(row.i+1).padStart(2,'0'),PDF_MARGIN,tocY);
+    page.ctx.font=pdfFont(13,false);page.ctx.fillStyle='#24251f';
+    let ty=tocY;
+    for(const line of row.titleLines){page.ctx.fillText(line,PDF_MARGIN+48,ty);ty+=22;}
+    // 点線の代わりに薄い水平線で余白を保った目次らしい見た目に
+    page.ctx.strokeStyle='#ddd9cf';page.ctx.lineWidth=1;page.ctx.beginPath();page.ctx.moveTo(PDF_MARGIN+48,ty+10);page.ctx.lineTo(PDF_PAGE_W-PDF_MARGIN,ty+10);page.ctx.stroke();
+    tocY+=row.rowH;
   }
 
+  // 本文：1ログ=1章。タイトルと各項目の階層を明確にする
   for(let i=0;i<logs.length;i++){
-    page=pdfNewPage(pages);page.ctx.font=pdfFont(10,true);page.ctx.fillStyle='#526b51';page.ctx.fillText(`LOG ${String(i+1).padStart(2,'0')}`,PDF_MARGIN,page.y);page.y+=28;
-    page.ctx.font=pdfFont(24,true);page.ctx.fillStyle='#24251f';
-    for(const line of wrapCanvasText(page.ctx,logs[i].title,PDF_CONTENT_W)){if(page.y>PDF_PAGE_H-PDF_MARGIN-35)page=pdfNewPage(pages);page.ctx.fillText(line,PDF_MARGIN,page.y);page.y+=34;}
+    page=pdfNewPage(pages);
+    page.ctx.fillStyle='#fffefa';page.ctx.fillRect(0,0,PDF_PAGE_W,PDF_PAGE_H);
+    page.ctx.fillStyle='#526b51';page.ctx.font=pdfFont(11,true);page.ctx.fillText(`CHAPTER ${String(i+1).padStart(2,'0')}`,PDF_MARGIN,PDF_MARGIN+20);
+    page.ctx.font=pdfFont(28,false);page.ctx.fillStyle='#24251f';
+    let titleY=PDF_MARGIN+78;
+    for(const line of wrapCanvasText(page.ctx,String(logs[i].title||'無題'),PDF_CONTENT_W)){page.ctx.fillText(line,PDF_MARGIN,titleY);titleY+=38;}
+    page.y=titleY+12;
+    page.ctx.strokeStyle='#d9d5ca';page.ctx.lineWidth=1;page.ctx.beginPath();page.ctx.moveTo(PDF_MARGIN,page.y);page.ctx.lineTo(PDF_PAGE_W-PDF_MARGIN,page.y);page.ctx.stroke();page.y+=30;
+
     page.ctx.font=pdfFont(10,false);page.ctx.fillStyle='#77766f';
-    const meta=`${formatDate(logs[i].createdAt)}${logs[i].field?' · '+logs[i].field:''}${logs[i].keywords?' · '+logs[i].keywords:''}`;
-    for(const line of wrapCanvasText(page.ctx,meta,PDF_CONTENT_W)){if(page.y>PDF_PAGE_H-PDF_MARGIN-22)page=pdfNewPage(pages);page.ctx.fillText(line,PDF_MARGIN,page.y);page.y+=18;}
-    page.y+=12;
+    const metaParts=[formatDate(logs[i].createdAt),logs[i].field,logs[i].keywords].filter(Boolean);
+    if(metaParts.length){page.ctx.fillText(metaParts.join('  ·  '),PDF_MARGIN,page.y);page.y+=28;}
+
     for(const [label,key] of [['今日の入口','entrance'],['調べてわかったこと','known'],['自分の引っかかり','question'],['今の自分の理解・考え','thought'],['次に調べたいこと','next'],['今日の一言','memo']]){
       page=pdfSection(page,label,logs[i][key]);
     }
