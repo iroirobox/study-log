@@ -79,12 +79,12 @@ main{width:min(920px,calc(100% - 32px));margin:0 auto;padding:34px 0 70px}.hero{
 #logForm .form-section:last-of-type{margin-bottom:0}
 #logForm .field{margin:0}
 #logForm .field-label{margin:0 0 8px;line-height:1.4}
-#logForm .two-col{column-gap:18px;row-gap:0;margin:0}
+#logForm .two-col{column-gap:24px;row-gap:18px;margin:0}
 #logForm .two-col .field{margin:0;padding:0}
 #logForm .form-hint{margin:0 0 10px}
 
 /* 本棚：検索と操作を整理 */
-.reading-page-head .actions{display:flex;align-items:center;gap:8px;flex-wrap:nowrap}.reading-page-head .actions .secondary{height:42px;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center}.reading-page-head .actions .secondary{font-size:13px}.reading-page-head .reading-export-top{padding:10px 15px}
+.reading-page-head .actions{display:flex;align-items:center;gap:8px;flex-wrap:nowrap}.reading-page-head .actions .secondary{height:42px;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center}.reading-page-head .actions .secondary{font-size:16px}.reading-page-head .reading-export-top{padding:10px 15px}
 .reading-toolbar{display:block;margin-bottom:16px}
 .reading-search-row{width:100%}
 .reading-tools{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
@@ -478,9 +478,9 @@ async function buildPdfFromLogs(logs,title){
   let tocY=PDF_MARGIN+145;
   const tocRows=[];
   for(let i=0;i<logs.length;i++){
-    page.ctx.font=pdfFont(15,false);
+    page.ctx.font=pdfFont(18,false);
     const titleLines=wrapCanvasText(page.ctx,String(logs[i].title||'無題'),PDF_CONTENT_W-72);
-    const rowH=Math.max(68,titleLines.length*24+30);
+    const rowH=Math.max(58,titleLines.length*28+18);
     tocRows.push({i,titleLines,rowH});
   }
   for(const row of tocRows){
@@ -488,12 +488,14 @@ async function buildPdfFromLogs(logs,title){
     const baseY=tocY;
     page.ctx.font=pdfFont(12,true);page.ctx.fillStyle='#526b51';
     page.ctx.fillText(String(row.i+1).padStart(2,'0'),PDF_MARGIN,baseY);
-    page.ctx.font=pdfFont(15,false);page.ctx.fillStyle='#24251f';
+    page.ctx.font=pdfFont(18,false);page.ctx.fillStyle='#24251f';
     let ty=baseY;
-    for(const line of row.titleLines){page.ctx.fillText(line,PDF_MARGIN+48,ty);ty+=24;}
-    // 各項目の区切り線は固定位置にして、折り返しがあってもずれないようにする
-    const lineY=baseY+row.rowH-16;
-    page.ctx.strokeStyle='#ddd9cf';page.ctx.lineWidth=1;page.ctx.beginPath();page.ctx.moveTo(PDF_MARGIN, lineY);page.ctx.lineTo(PDF_PAGE_W-PDF_MARGIN, lineY);page.ctx.stroke();
+    let lastLine='';
+    for(const line of row.titleLines){page.ctx.fillText(line,PDF_MARGIN+48,ty);lastLine=line;ty+=28;}
+    // 下線はタイトル文字のすぐ下に置く。ページ幅いっぱいには伸ばさない。
+    const underlineY=ty-21;
+    const titleWidth=page.ctx.measureText(lastLine).width;
+    page.ctx.strokeStyle='#bdb8aa';page.ctx.lineWidth=1;page.ctx.beginPath();page.ctx.moveTo(PDF_MARGIN+48, underlineY);page.ctx.lineTo(PDF_MARGIN+48+titleWidth, underlineY);page.ctx.stroke();
     tocY+=row.rowH;
   }
 
